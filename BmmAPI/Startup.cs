@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BmmAPI.APIBehavior;
 using BmmAPI.Filters;
+using BmmAPI.Helpres;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Routing;
@@ -62,6 +63,8 @@ namespace BmmAPI
             });
 
             services.AddAutoMapper(typeof(Startup));
+            services.AddScoped<IFileStorageService,InAppStorageService>();
+            services.AddHttpContextAccessor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,6 +78,8 @@ namespace BmmAPI
             }
 
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();   
 
             app.UseRouting();
 

@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="Entities\NewFolder\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>
