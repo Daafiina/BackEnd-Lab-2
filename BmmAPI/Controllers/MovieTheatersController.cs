@@ -40,6 +40,7 @@ namespace BmmAPI.Controllers
             }
             return mapper.Map<MovieTheaterDTO>(movieTheater);
         }
+
         [HttpPost]
         public async Task<ActionResult> Post(MovieTheaterCreationDTO movieCreationDTO)
         {

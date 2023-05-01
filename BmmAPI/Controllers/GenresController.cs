@@ -30,6 +30,15 @@ namespace BmmAPI.Controllers
             var genres = await queryable.OrderBy(x => x.Name).Paginate(paginationDTO).ToListAsync();
             return mapper.Map<List<GenreDTO>>(genres);
         }
+
+        [HttpGet("all")] // api/genres
+        public async Task<ActionResult<List<GenreDTO>>> Get()
+        {
+            var genres = await context.Genres.OrderBy(x => x.Name).ToListAsync();
+            return mapper.Map<List<GenreDTO>>(genres);
+        }
+
+
         [HttpGet("{Id:int}")] //api/genres/example
         public async Task<ActionResult<GenreDTO>> Get(int Id) //action result mundemi me kthy edhe genre po edhe action result siq eshte NotFound
         {
