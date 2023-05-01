@@ -18,9 +18,9 @@
             }
             var fileName = Path.GetFileName(fileRoute);
 
-            var fileDirectory = Path.Combine(env.WebRootPath, containerName);
+            var fileDirectory = Path.Combine(env.WebRootPath, containerName, fileName);
 
-            if(File.Exists(fileDirectory)) 
+            if (File.Exists(fileDirectory)) 
             {
                 File.Delete(fileDirectory);
             

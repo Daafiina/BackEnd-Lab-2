@@ -62,7 +62,7 @@ namespace BmmAPI
                 options.AddDefaultPolicy(builder =>
                 {
                     builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader()
-                    .WithExposedHeaders(new string[] { "totalAmountsOfRecords" });
+                     .WithExposedHeaders(new string[] { "totalAmountOfRecords" });
 
                 });
             });
