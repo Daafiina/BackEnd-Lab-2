@@ -2,6 +2,7 @@
 using BmmAPI.DTOs;
 using BmmAPI.Entities;
 using BmmAPI.Helpres;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,24 @@ namespace BmmAPI.Controllers
             this.fileStorageService = fileStorageService;
         }
 
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<MovieDTO>> Get(int id)
+        {
+            var movie = await context.Movies
+                .Include(x => x.MoviesGenres).ThenInclude(x => x.Genre)
+                .Include(x => x.MovieTheatersMovies).ThenInclude(x => x.MovieTheater)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+
+            var dto = mapper.Map<MovieDTO>(movie);
+            return dto;
+
+        }
 
 
         [HttpGet]
@@ -53,6 +72,40 @@ namespace BmmAPI.Controllers
 
         }
 
+        [HttpGet("filter")]
+        public async Task<ActionResult<List<MovieDTO>>> Filter([FromQuery] FilterMoviesDTO filterMoviesDTO)
+        {
+            var moviesQueryable = context.Movies.AsQueryable();
+            
+            if(!string.IsNullOrEmpty(filterMoviesDTO.Title))
+            {
+                moviesQueryable=moviesQueryable.Where(x => x.Title.Contains(filterMoviesDTO.Title));
+            }
+
+            if(filterMoviesDTO.InTheaters)
+            {
+                moviesQueryable = moviesQueryable.Where(x => x.InTheaters);
+            }
+
+            if(filterMoviesDTO.UpcomingReleases)
+            {
+                var today = DateTime.Today;
+                moviesQueryable = moviesQueryable.Where(x => x.ReleaseDate > today);
+            }
+
+            if(filterMoviesDTO.GenreId != 0)
+            {
+                moviesQueryable = moviesQueryable
+                    .Where(x => x.MoviesGenres.Select(y => y.GenreId)
+                    .Contains(filterMoviesDTO.GenreId));
+            }
+            await HttpContext.InsertParametersPaginationInHeader(moviesQueryable);
+            var movies = await moviesQueryable.OrderBy(x => x.Title).Paginate(filterMoviesDTO.PaginationDTO)
+                .ToListAsync();
+            return mapper.Map<List<MovieDTO>>(movies);
+        }
+
+
         [HttpGet("PostGet")]
         public async Task<ActionResult<MoviePostGetDTO>> PostGet()
         {
@@ -65,23 +118,6 @@ namespace BmmAPI.Controllers
             return new MoviePostGetDTO() { Genres = genresDTO, MovieTheaters = movieTheatersDTO };
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<MovieDTO>> Get(int id)
-        {
-            var movie = await context.Movies
-                .Include(x => x.MoviesGenres).ThenInclude(x => x.Genre)
-                .Include(x => x.MovieTheatersMovies).ThenInclude(x => x.MovieTheater)
-                .FirstOrDefaultAsync(x => x.Id == id);
-
-            if (movie == null)
-            {
-                return NotFound();
-            }
-
-            var dto = mapper.Map<MovieDTO>(movie);
-            return dto;
-
-        }
 
         [HttpPost]
         public async Task<ActionResult<int>> Post([FromForm] MovieCreationDTO movieCreationDTO)
