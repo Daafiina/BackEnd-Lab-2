@@ -48,6 +48,8 @@ namespace BmmAPI.Controllers
             return mapper.Map<ActorDTO>(actor);
         }
 
+        
+
         [HttpPost]
         public async Task<ActionResult> Post([FromForm] ActorCreationDTO actorCreationDTO)
         {

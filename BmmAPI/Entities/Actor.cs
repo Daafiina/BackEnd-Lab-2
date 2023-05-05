@@ -5,6 +5,7 @@ namespace BmmAPI.Entities
     public class Actor
     {
         public int Id { get; set; }
+
         [Required]
         [StringLength(120)]
         public string Name { get; set; }
