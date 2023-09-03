@@ -16,6 +16,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
 using System;
@@ -45,7 +46,9 @@ namespace BmmAPI
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
             slqOptions => slqOptions.UseNetTopologySuite()));
 
-            
+            string mongoDBConnectionString = Configuration.GetConnectionString("MongoDBConnection");
+            services.AddSingleton<IMongoClient>(new MongoClient(mongoDBConnectionString));
+
 
             services.AddControllers(options =>
             {
