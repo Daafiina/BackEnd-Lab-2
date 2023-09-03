@@ -28,8 +28,9 @@ public class BooksController : ControllerBase
     public async Task<ActionResult<Book>> GetBook(string id)
     {
         var book = await _collection.Find(b => b.Id == id).FirstOrDefaultAsync();
-        if (book == null)
+        if (book == null) { 
             return NotFound();
+        }
 
         return Ok(book);
     }
@@ -44,7 +45,7 @@ public class BooksController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateBook(string id, Book book)
     {
-        await _collection.ReplaceOneAsync(b => b.Id == id, book);
+        await _collection.ReplaceOneAsync(filter: b => b.Id == id, book);
         return NoContent();
     }
 

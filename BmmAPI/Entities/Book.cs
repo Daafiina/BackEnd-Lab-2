@@ -10,7 +10,7 @@ namespace BmmAPI.Entities
         public string? Id { get; set; }
         public string BookName { get; set; } = "";
         public string Author { get; set; } = "";
-        public DateTime PublishedDate { get; set; }
+        public DateTime? PublishedDate { get; set; }
         public string? BookGenre { get; set; }
 
     }
