@@ -37,6 +37,8 @@ namespace BmmAPI
         public DbSet<MoviesGenres> MoviesGenres { get; set; }
         public DbSet<MovieTheatersMovies> MoviesTheatersMovies { get; set; }
 
+        public DbSet<Rating>Ratings { get; set; }
+
 
 
 

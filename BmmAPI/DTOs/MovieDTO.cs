@@ -16,6 +16,9 @@ namespace BmmAPI.DTOs
 
         public List<MovieTheaterDTO> MovieTheaters { get; set; }
 
+        public double AverageVote { get; set; }
+        public int UserVote { get; set; }
+
 
     }
 }

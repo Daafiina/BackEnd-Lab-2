@@ -2,14 +2,17 @@
 using BmmAPI.DTOs;
 using BmmAPI.Entities;
 using BmmAPI.Helpres;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Xml.Linq;
 
 namespace BmmAPI.Controllers
 {
-    [Route("api/actors")]
     [ApiController]
+    [Route("api/actors")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "IsAdmin")]
+
 
     public class ActorsController : ControllerBase
     {

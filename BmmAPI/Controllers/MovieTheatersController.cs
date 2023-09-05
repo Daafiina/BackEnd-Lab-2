@@ -2,6 +2,8 @@
 using BmmAPI.DTOs;
 using BmmAPI.Entities;
 using BmmAPI.Helpres;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +11,8 @@ namespace BmmAPI.Controllers
 {
     [ApiController]
     [Route("api/movietheatres")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "IsAdmin")]
+
     public class MovieTheatersController:ControllerBase
     {
         private readonly ApplicationDbContext context;

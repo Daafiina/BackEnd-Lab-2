@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using BmmAPI.DTOs;
 using BmmAPI.Entities;
+using Microsoft.AspNetCore.Identity;
 using NetTopologySuite.Geometries;
+
 
 namespace BmmAPI.Helpres
 {
@@ -11,8 +13,10 @@ namespace BmmAPI.Helpres
         {
             CreateMap<GenreDTO,Genre>().ReverseMap();
             CreateMap<GenreCreationDTO, Genre>();
+
             CreateMap<ActorDTO, Actor>().ReverseMap();
             CreateMap<ActorCreationDTO, Actor>();
+
             CreateMap<MovieTheater, MovieTheaterDTO>()
                .ForMember(x => x.Latitude, dto => dto.MapFrom(prop => prop.Location.Y))
                .ForMember(x => x.Longitude, dto => dto.MapFrom(prop => prop.Location.X));
@@ -32,6 +36,8 @@ namespace BmmAPI.Helpres
             CreateMap<Movie, MovieDTO>()
                 .ForMember(x => x.Genres, options => options.MapFrom(MapMoviesGenres))
                 .ForMember(x => x.MovieTheaters, options => options.MapFrom(MapMovieTheatersMovies));
+
+            CreateMap<IdentityUser, UserDTO>();
 
         }
 

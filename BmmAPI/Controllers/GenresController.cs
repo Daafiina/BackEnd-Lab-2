@@ -4,19 +4,25 @@ using BmmAPI.Entities;
 using BmmAPI.Helpres;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
+
 
 namespace BmmAPI.Controllers
 {
     [Route("api/genres")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "IsAdmin")]
+
     public class GenresController:ControllerBase
     {
         private readonly ILogger<GenresController> logger;
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
 
-        public GenresController(ILogger<GenresController> logger
-            ,ApplicationDbContext context,IMapper mapper)
+        public GenresController(ILogger<GenresController> logger,
+           ApplicationDbContext context,IMapper mapper)
         {
             this.logger = logger;
             this.context = context;
@@ -32,6 +38,7 @@ namespace BmmAPI.Controllers
         }
 
         [HttpGet("all")] // api/genres
+        [AllowAnonymous]
         public async Task<ActionResult<List<GenreDTO>>> Get()
         {
             var genres = await context.Genres.OrderBy(x => x.Name).ToListAsync();
