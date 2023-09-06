@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using MySql.Data.MySqlClient;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -20,39 +20,14 @@ namespace BmmAPI.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly SignInManager<IdentityUser> signInManager;
         private readonly IConfiguration configuration;
-        private readonly ApplicationDbContext context;
-        private readonly IMapper mapper;
-
         public AccountsController(UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            IConfiguration configuration,
-            ApplicationDbContext context,
-            IMapper mapper)
+            IConfiguration configuration)
+            
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.configuration = configuration;
-            this.context = context;
-            this.mapper = mapper;
-        }
-
-        [HttpGet("listUsers")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "IsAdmin")]
-        public async Task<ActionResult<List<UserDTO>>> GetListUsers([FromQuery] PaginationDTO paginationDTO)
-        {
-            var queryable = context.Users.AsQueryable();
-            await HttpContext.InsertParametersPaginationInHeader(queryable);
-            var users = await queryable.OrderBy(x => x.Email).Paginate(paginationDTO).ToListAsync();
-            return mapper.Map<List<UserDTO>>(users);
-        }
-
-        [HttpPost("makeAdmin")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "IsAdmin")]
-        public async Task<ActionResult> MakeAdmin([FromBody] string userId)
-        {
-            var user = await userManager.FindByIdAsync(userId);
-            await userManager.AddClaimAsync(user, new Claim("role", "admin"));
-            return NoContent();
         }
 
         [HttpPost("removeAdmin")]
@@ -68,10 +43,10 @@ namespace BmmAPI.Controllers
         public async Task<ActionResult<AuthenticationResponse>> Create(
             [FromBody] UserCredentials userCredentials)
         {
-            var user = new IdentityUser { UserName = userCredentials.Email, Email = userCredentials.Email };
-            var result = await userManager.CreateAsync(user, userCredentials.Password);
+            var user = new IdentityUser { UserName = userCredentials.Email, Email=userCredentials.Email };
+            var reslut = await userManager.CreateAsync(user, userCredentials.Password);
 
-            if (result.Succeeded)
+            if(reslut.Succeeded)
             {
                 return await BuildToken(userCredentials);
             }
@@ -123,6 +98,17 @@ namespace BmmAPI.Controllers
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = expiration
             };
+        }
+
+        //Kjo metode perdoret per me fetch numrin e userave te regjistrum
+        [HttpGet("countUsers")]
+        public async Task<IActionResult> GetUserCount()
+        {
+            int userCount = await context.Users.CountAsync();
+
+            var UserNumber = new { UserCount = userCount };
+
+            return Ok(UserNumber);
         }
     }
 }

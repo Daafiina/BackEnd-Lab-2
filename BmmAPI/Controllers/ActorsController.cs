@@ -14,6 +14,8 @@ namespace BmmAPI.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "IsAdmin")]
 
 
+    [Route("api/actors")]
+
     public class ActorsController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -29,13 +31,27 @@ namespace BmmAPI.Controllers
             this.fileStorageService = fileStorageService;
         }
 
-        [HttpGet]
+        [HttpGet("paged")]
         public async Task<ActionResult<List<ActorDTO>>> Get([FromQuery] PaginationDTO paginationDTO)
         {
             var queryable = context.Actors.AsQueryable();
             await HttpContext.InsertParametersPaginationInHeader(queryable);
             var actors = await queryable.OrderBy(x=>x.Name).Paginate(paginationDTO).ToListAsync();
             return mapper.Map<List<ActorDTO>>(actors);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IndexActorsDTO>> Get()
+        {
+            var top = 8;
+
+           var isActor = await context.Actors
+            .ToListAsync();
+
+
+            var indexActorsDTO = new IndexActorsDTO();
+            indexActorsDTO.IsActor = mapper.Map<List<ActorDTO>>(isActor);
+            return indexActorsDTO;
         }
 
         [HttpGet("{id:int}")]

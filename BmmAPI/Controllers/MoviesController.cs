@@ -84,7 +84,7 @@ namespace BmmAPI.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<LandingPageDTO>> Get()
         {
-            var top = 6;
+            var top = 8;
             var today = DateTime.Today;
 
             var upcomingReleases = await context.Movies
