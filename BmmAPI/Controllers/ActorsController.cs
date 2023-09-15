@@ -14,7 +14,6 @@ namespace BmmAPI.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "IsAdmin")]
 
 
-    [Route("api/actors")]
 
     public class ActorsController : ControllerBase
     {

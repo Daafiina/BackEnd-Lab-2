@@ -10,6 +10,8 @@ using MySql.Data.MySqlClient;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace BmmAPI.Controllers
 {
@@ -20,16 +22,38 @@ namespace BmmAPI.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly SignInManager<IdentityUser> signInManager;
         private readonly IConfiguration configuration;
+        private readonly ApplicationDbContext context;
+        private readonly IMapper mapper;
+
         public AccountsController(UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            IConfiguration configuration)
+            IConfiguration configuration, ApplicationDbContext context,
+            IMapper mapper)
             
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.configuration = configuration;
+            this.context = context;
+            this.mapper = mapper;
+
         }
 
+        [HttpGet("listUsers")]
+        public async Task<ActionResult<List<UserDTO>>> GetListUsers([FromQuery] PaginationDTO paginationDTO)
+        {
+            var queryable = context.Users.AsQueryable();
+            await HttpContext.InsertParametersPaginationInHeader(queryable);
+            var users = await queryable.OrderBy(x => x.Email).Paginate(paginationDTO).ToListAsync();
+            return mapper.Map<List<UserDTO>>(users);
+        }
+        [HttpPost("makeAdmin")]
+        public async Task<ActionResult> MakeAdmin([FromBody] string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            await userManager.AddClaimAsync(user, new Claim("role", "admin"));
+            return NoContent();
+        }
         [HttpPost("removeAdmin")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "IsAdmin")]
         public async Task<ActionResult> RemoveAdmin([FromBody] string userId)
@@ -43,7 +67,10 @@ namespace BmmAPI.Controllers
         public async Task<ActionResult<AuthenticationResponse>> Create(
             [FromBody] UserCredentials userCredentials)
         {
+
             var user = new IdentityUser { UserName = userCredentials.Email, Email=userCredentials.Email };
+            var result = await userManager.CreateAsync(user, userCredentials.Password);
+
             var reslut = await userManager.CreateAsync(user, userCredentials.Password);
 
             if(reslut.Succeeded)
