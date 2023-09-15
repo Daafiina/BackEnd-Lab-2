@@ -11,7 +11,6 @@ namespace BmmAPI.Controllers
 {
     [ApiController]
     [Route("api/actors")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "IsAdmin")]
 
 
 
@@ -31,6 +30,7 @@ namespace BmmAPI.Controllers
         }
 
         [HttpGet("paged")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<List<ActorDTO>>> Get([FromQuery] PaginationDTO paginationDTO)
         {
             var queryable = context.Actors.AsQueryable();
@@ -40,6 +40,7 @@ namespace BmmAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<IndexActorsDTO>> Get()
         {
             var top = 8;
@@ -52,6 +53,7 @@ namespace BmmAPI.Controllers
             indexActorsDTO.IsActor = mapper.Map<List<ActorDTO>>(isActor);
             return indexActorsDTO;
         }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "IsAdmin")]
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult<ActorDTO>> Get(int id)
@@ -66,7 +68,8 @@ namespace BmmAPI.Controllers
             return mapper.Map<ActorDTO>(actor);
         }
 
-        
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "IsAdmin")]
 
         [HttpPost]
         public async Task<ActionResult> Post([FromForm] ActorCreationDTO actorCreationDTO)
@@ -80,6 +83,7 @@ namespace BmmAPI.Controllers
             await context.SaveChangesAsync();
             return NoContent();
         }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "IsAdmin")]
 
         [HttpPut("{id:int}")]
         public async Task<ActionResult> Put(int id, [FromForm] ActorCreationDTO actorCreationDTO)
@@ -103,6 +107,7 @@ namespace BmmAPI.Controllers
             return NoContent();
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "IsAdmin")]
 
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id) 

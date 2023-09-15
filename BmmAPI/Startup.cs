@@ -86,6 +86,7 @@ namespace BmmAPI
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("IsAdmin", policy => policy.RequireClaim("role", "admin"));
+
             });
 
 

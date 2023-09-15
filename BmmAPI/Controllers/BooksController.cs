@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using BmmAPI.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 [Route("api/BooksController")]
 [ApiController]
@@ -35,7 +37,9 @@ public class BooksController : ControllerBase
         return Ok(book);
     }
 
+
     [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "IsAdmin")]
     public async Task<IActionResult> CreateBook(Book book)
     {
         await _collection.InsertOneAsync(book);
