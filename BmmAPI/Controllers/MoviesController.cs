@@ -120,7 +120,7 @@ namespace BmmAPI.Controllers
 
             if(filterMoviesDTO.InTheaters)
             {
-                moviesQueryable = moviesQueryable.Where(x => x.InTheaters);
+                moviesQueryable = moviesQueryable.Where(x => x.InTheaters == true);
             }
 
             if(filterMoviesDTO.UpcomingReleases)
@@ -136,8 +136,7 @@ namespace BmmAPI.Controllers
                     .Contains(filterMoviesDTO.GenreId));
             }
             await HttpContext.InsertParametersPaginationInHeader(moviesQueryable);
-            var movies = await moviesQueryable.OrderBy(x => x.Title).Paginate(filterMoviesDTO.PaginationDTO)
-                .ToListAsync();
+            var movies = await moviesQueryable.ToListAsync();
             return mapper.Map<List<MovieDTO>>(movies);
         }
 

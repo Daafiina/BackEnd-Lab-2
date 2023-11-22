@@ -95,12 +95,25 @@ namespace BmmAPI.Controllers
                 return NotFound();
             }
 
-            actor = mapper.Map(actorCreationDTO, actor);
+            // Update properties individually
+            if (actorCreationDTO.Name != null)
+            {
+                actor.Name = actorCreationDTO.Name;
+            }
+
+            if (actorCreationDTO.DateOfBirth != null)
+            {
+                actor.DateOfBirth = actorCreationDTO.DateOfBirth;
+            }
+
+            if (actorCreationDTO.Biography != null)
+            {
+                actor.Biography = actorCreationDTO.Biography;
+            }
 
             if (actorCreationDTO.Picture != null)
             {
-                actor.Picture = await fileStorageService.EditFile(containerName,
-                        actorCreationDTO.Picture, actor.Picture);
+                actor.Picture = await fileStorageService.EditFile(containerName, actorCreationDTO.Picture, actor.Picture);
             }
 
             await context.SaveChangesAsync();
